@@ -14,7 +14,10 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
 		defaults = {
 			checkboxHeight: 25,
 			radioHeight: 25,
-			selectWidth: 190
+			selectWidth: 190,
+			radioClass: 'radio',
+			checkboxClass: 'checkbox',
+			selectClass: 'select'
 		};
 	
 	function Plugin( element, options ) {
@@ -28,28 +31,42 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
 	}
 
 	Plugin.prototype.init = function () {
+		// TODO: this needs to be cleaned up and added once globally
+		$('body').append('<style type="text/css">input.styled { display: none; }'
+			+' select.styled { position: relative; width: ' + this.options.selectWidth + 'px; opacity: 0;'
+			+' filter: alpha(opacity=0); z-index: 5; }'
+			+' .disabled { opacity: 0.5; filter: alpha(opacity=50); }</style>');
+
 		//var inputs = document.getElementsByTagName("input"), span = Array(), textnode, option, active;
 		var inputs = $(this.element).filter('input').toArray(), 
 			span = Array(), textnode, option, active;
 		for(a = 0; a < inputs.length; a++) {
-			if((inputs[a].type == "checkbox" || inputs[a].type == "radio") && inputs[a].className == "styled") {
+			if(inputs[a].type == "checkbox" || inputs[a].type == "radio") {
 				span[a] = document.createElement("span");
-				span[a].className = inputs[a].type;
+				//span[a].className = inputs[a].type;
+				switch (inputs[a].type) {
+					case 'radio':
+						span[a].className = this.options.radioClass;
+						break;
+					case 'checkbox':
+						span[a].className = this.options.checkboxClass;
+						break;
+				}
 
 				if(inputs[a].checked == true) {
 					if(inputs[a].type == "checkbox") {
-						position = "0 -" + (checkboxHeight*2) + "px";
+						position = "0 -" + (this.options.checkboxHeight*2) + "px";
 						span[a].style.backgroundPosition = position;
 					} else {
-						position = "0 -" + (radioHeight*2) + "px";
+						position = "0 -" + (this.options.radioHeight*2) + "px";
 						span[a].style.backgroundPosition = position;
 					}
 				}
 				inputs[a].parentNode.insertBefore(span[a], inputs[a]);
-				inputs[a].onchange = this.clear;
+				inputs[a].onchange = $.proxy(this.clear, this);
 				if(!inputs[a].getAttribute("disabled")) {
-					span[a].onmousedown = this.pushed;
-					span[a].onmouseup = this.check;
+					span[a].onmousedown = $.proxy(this.pushed, this);
+					span[a].onmouseup = $.proxy(this.check, this);
 				} else {
 					span[a].className = span[a].className += " disabled";
 				}
@@ -58,57 +75,57 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
 		//inputs = document.getElementsByTagName("select");
 		inputs = $(this.element).filter('select').toArray();
 		for(a = 0; a < inputs.length; a++) {
-			if(inputs[a].className == "styled") {
-				option = inputs[a].getElementsByTagName("option");
-				active = option[0].childNodes[0].nodeValue;
-				textnode = document.createTextNode(active);
-				for(b = 0; b < option.length; b++) {
-					if(option[b].selected == true) {
-						textnode = document.createTextNode(option[b].childNodes[0].nodeValue);
-					}
-				}
-				span[a] = document.createElement("span");
-				span[a].className = "select";
-				span[a].id = "select" + inputs[a].name;
-				span[a].appendChild(textnode);
-				inputs[a].parentNode.insertBefore(span[a], inputs[a]);
-				if(!inputs[a].getAttribute("disabled")) {
-					inputs[a].onchange = this.choose;
-				} else {
-					inputs[a].previousSibling.className = inputs[a].previousSibling.className += " disabled";
+			option = inputs[a].getElementsByTagName("option");
+			active = option[0].childNodes[0].nodeValue;
+			textnode = document.createTextNode(active);
+			for(b = 0; b < option.length; b++) {
+				if(option[b].selected == true) {
+					textnode = document.createTextNode(option[b].childNodes[0].nodeValue);
 				}
 			}
+			span[a] = document.createElement("span");
+			//span[a].className = "select";
+			span[a].className = this.options.selectClass;
+			span[a].id = "select" + inputs[a].name;
+			span[a].appendChild(textnode);
+			inputs[a].parentNode.insertBefore(span[a], inputs[a]);
+			if(!inputs[a].getAttribute("disabled")) {
+				inputs[a].onchange = this.choose;
+			} else {
+				inputs[a].previousSibling.className = inputs[a].previousSibling.className += " disabled";
+			}
 		}
-		document.onmouseup = this.clear;
-		console.log(this, this.element, this.options);
+		document.onmouseup = $.proxy(this.clear, this);
 
     };
-    Plugin.prototype.pushed = function () {
-		element = this.nextSibling;
+    Plugin.prototype.pushed = function (ev) {
+		//element = this.nextSibling;
+		element = ev.target.nextSibling;
 		if(element.checked == true && element.type == "checkbox") {
-			this.style.backgroundPosition = "0 -" + checkboxHeight*3 + "px";
+			ev.target.style.backgroundPosition = "0 -" + this.options.checkboxHeight*3 + "px";
 		} else if(element.checked == true && element.type == "radio") {
-			this.style.backgroundPosition = "0 -" + radioHeight*3 + "px";
+			ev.target.style.backgroundPosition = "0 -" + this.options.radioHeight*3 + "px";
 		} else if(element.checked != true && element.type == "checkbox") {
-			this.style.backgroundPosition = "0 -" + checkboxHeight + "px";
+			ev.target.style.backgroundPosition = "0 -" + this.options.checkboxHeight + "px";
 		} else {
-			this.style.backgroundPosition = "0 -" + radioHeight + "px";
+			ev.target.style.backgroundPosition = "0 -" + this.options.radioHeight + "px";
 		}
 	};
-	Plugin.prototype.check = function () {
-		element = this.nextSibling;
+	Plugin.prototype.check = function (ev) {
+		//element = this.nextSibling;
+		element = ev.target.nextSibling;
 		if(element.checked == true && element.type == "checkbox") {
-			this.style.backgroundPosition = "0 0";
+			ev.target.style.backgroundPosition = "0 0";
 			element.checked = false;
 		} else {
 			if(element.type == "checkbox") {
-				this.style.backgroundPosition = "0 -" + checkboxHeight*2 + "px";
+				ev.target.style.backgroundPosition = "0 -" + this.options.checkboxHeight*2 + "px";
 			} else {
-				this.style.backgroundPosition = "0 -" + radioHeight*2 + "px";
-				group = this.nextSibling.name;
+				ev.target.style.backgroundPosition = "0 -" + this.options.radioHeight*2 + "px";
+				group = ev.target.nextSibling.name;
 				inputs = document.getElementsByTagName("input");
 				for(a = 0; a < inputs.length; a++) {
-					if(inputs[a].name == group && inputs[a] != this.nextSibling) {
+					if(inputs[a].name == group && inputs[a] != ev.target.nextSibling) {
 						inputs[a].previousSibling.style.backgroundPosition = "0 0";
 					}
 				}
@@ -120,11 +137,11 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
 		inputs = document.getElementsByTagName("input");
 		for(var b = 0; b < inputs.length; b++) {
 			if(inputs[b].type == "checkbox" && inputs[b].checked == true && inputs[b].className == "styled") {
-				inputs[b].previousSibling.style.backgroundPosition = "0 -" + checkboxHeight*2 + "px";
+				inputs[b].previousSibling.style.backgroundPosition = "0 -" + this.options.checkboxHeight*2 + "px";
 			} else if(inputs[b].type == "checkbox" && inputs[b].className == "styled") {
 				inputs[b].previousSibling.style.backgroundPosition = "0 0";
 			} else if(inputs[b].type == "radio" && inputs[b].checked == true && inputs[b].className == "styled") {
-				inputs[b].previousSibling.style.backgroundPosition = "0 -" + radioHeight*2 + "px";
+				inputs[b].previousSibling.style.backgroundPosition = "0 -" + this.options.radioHeight*2 + "px";
 			} else if(inputs[b].type == "radio" && inputs[b].className == "styled") {
 				inputs[b].previousSibling.style.backgroundPosition = "0 0";
 			}
@@ -139,7 +156,6 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
 		}
 	}
 
-
     // A really lightweight plugin wrapper around the constructor, 
     // preventing against multiple instantiations
     $.fn[pluginName] = function ( options ) {
@@ -151,29 +167,3 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
     }
 
 })(jQuery, window, document);
-
-
-var checkboxHeight = "25";
-var radioHeight = "25";
-var selectWidth = "190";
-
-
-/* No need to change anything after this */
-
-
-document.write('<style type="text/css">input.styled { display: none; } select.styled { position: relative; width: ' + selectWidth + 'px; opacity: 0; filter: alpha(opacity=0); z-index: 5; } .disabled { opacity: 0.5; filter: alpha(opacity=50); }</style>');
-
-var Custom = {
-	init: function() {
-	},
-	pushed: function() {
-	},
-	check: function() {
-
-	},
-	clear: function() {
-	},
-	choose: function() {
-	}
-}
-//window.onload = Custom.init;
