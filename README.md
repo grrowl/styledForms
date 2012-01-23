@@ -7,6 +7,7 @@ this is a basic jQuery wrapper around that functionality, because I much prefer 
 $('.options_block input').styledForms();
 ```
 than put classnames on each styled form element and define the replacement images globally. Plugin setup with all options (and defaults):
+
 ```javascript
 $('.options_block input').styledForms({
 	checkboxHeight: 25,
