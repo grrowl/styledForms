@@ -43,7 +43,6 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
 		for(a = 0; a < inputs.length; a++) {
 			if(inputs[a].type == "checkbox" || inputs[a].type == "radio") {
 				span[a] = document.createElement("span");
-				//span[a].className = inputs[a].type;
 				switch (inputs[a].type) {
 					case 'radio':
 						span[a].className = this.options.radioClass;
@@ -84,16 +83,22 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
 				}
 			}
 			span[a] = document.createElement("span");
-			//span[a].className = "select";
 			span[a].className = this.options.selectClass;
 			span[a].id = "select" + inputs[a].name;
 			span[a].appendChild(textnode);
 			inputs[a].parentNode.insertBefore(span[a], inputs[a]);
 			if(!inputs[a].getAttribute("disabled")) {
 				inputs[a].onchange = this.choose;
+				
+				console.log(inputs[a]);
+				$(span[a]).on('mousedown mouseup', function (ev) {
+					console.log('proxy mouse event', this, ev, inputs[a]);
+					$(inputs[a]).trigger(ev);
+				});
 			} else {
 				inputs[a].previousSibling.className = inputs[a].previousSibling.className += " disabled";
 			}
+			inputs[a].className += " styled";
 		}
 		document.onmouseup = $.proxy(this.clear, this);
 

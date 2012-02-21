@@ -19,4 +19,6 @@ $('.options_block input').styledForms({
 });
 ```
 
+There's no default images provided, but for the checkboxes and radio inputs it's spritesheet with 4 images for each state (unchecked, unchecked focus, checked, checked focus), and just the selectbox replacement for selects. Take a look in *styledForms.css* to see how the images transform to styles.
+
 At the moment it doesn't actually leverage any jQuery functionality apart from the most basic plugin wrapping, this is subject to change in future to bring down codesize and strengthen compatability. I encourage you to fork this if you can contribute.
