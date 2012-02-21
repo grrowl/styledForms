@@ -89,12 +89,6 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
 			inputs[a].parentNode.insertBefore(span[a], inputs[a]);
 			if(!inputs[a].getAttribute("disabled")) {
 				inputs[a].onchange = this.choose;
-				
-				console.log(inputs[a]);
-				$(span[a]).on('mousedown mouseup', function (ev) {
-					console.log('proxy mouse event', this, ev, inputs[a]);
-					$(inputs[a]).trigger(ev);
-				});
 			} else {
 				inputs[a].previousSibling.className = inputs[a].previousSibling.className += " disabled";
 			}
