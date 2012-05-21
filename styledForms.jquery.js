@@ -34,7 +34,7 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
 		// TODO: this needs to be cleaned up and added once globally
 		$('body').append('<style type="text/css">input.styled { display: none; }'
 			+' select.styled { position: relative; width: ' + this.options.selectWidth + 'px; opacity: 0;'
-			+' filter: alpha(opacity=0); z-index: 5; }'
+			+' filter: alpha(opacity=0); z-index: 5; -webkit-appearance: menulist-button; }'
 			+' .disabled { opacity: 0.5; filter: alpha(opacity=50); }</style>');
 
 		//var inputs = document.getElementsByTagName("input"), span = Array(), textnode, option, active;
@@ -84,7 +84,7 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
 			}
 			span[a] = document.createElement("span");
 			span[a].className = this.options.selectClass;
-			span[a].id = "select" + inputs[a].name;
+			span[a].id = "select" + (inputs[a].name ? inputs[a].name : a);
 			span[a].appendChild(textnode);
 			inputs[a].parentNode.insertBefore(span[a], inputs[a]);
 			if(!inputs[a].getAttribute("disabled")) {
