@@ -100,6 +100,9 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
     Plugin.prototype.pushed = function (ev) {
 		//element = this.nextSibling;
 		element = ev.target.nextSibling;
+		if(element.disabled == true)
+			return;
+
 		if(element.checked == true && element.type == "checkbox") {
 			ev.target.style.backgroundPosition = "0 -" + this.options.checkboxHeight*3 + "px";
 		} else if(element.checked == true && element.type == "radio") {
@@ -113,6 +116,9 @@ Incorporating code from <https://github.com/zenorocha/jquery-boilerplate/blob/ma
 	Plugin.prototype.check = function (ev) {
 		//element = this.nextSibling;
 		element = ev.target.nextSibling;
+		if(element.disabled == true)
+			return;
+		
 		if(element.checked == true && element.type == "checkbox") {
 			ev.target.style.backgroundPosition = "0 0";
 			element.checked = false;
